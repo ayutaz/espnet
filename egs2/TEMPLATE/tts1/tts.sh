@@ -35,8 +35,8 @@ skip_upload=true     # Skip packing and uploading stages.
 skip_upload_hf=true # Skip uploading to hugging face stages.
 ngpu=1               # The number of gpus ("0" uses cpu, otherwise use gpu).
 num_nodes=1          # The number of nodes.
-nj=32                # The number of parallel jobs.
-inference_nj=32      # The number of parallel jobs in decoding.
+nj=8                # The number of parallel jobs.
+inference_nj=8      # The number of parallel jobs in decoding.
 gpu_inference=false  # Whether to perform gpu decoding.
 dumpdir=dump         # Directory to dump features.
 expdir=exp           # Directory to save experiments.
@@ -211,8 +211,7 @@ EOF
 log "$0 $*"
 # Save command line args for logging (they will be lost after utils/parse_options.sh)
 run_args=$(pyscripts/utils/print_args.py $0 "$@")
-ls -la .
-. utils/parse_options.sh
+. parse_options.sh
 
 if [ $# -ne 0 ]; then
     log "${help_message}"
