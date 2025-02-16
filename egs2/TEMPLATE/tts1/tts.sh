@@ -211,6 +211,7 @@ EOF
 log "$0 $*"
 # Save command line args for logging (they will be lost after utils/parse_options.sh)
 run_args=$(pyscripts/utils/print_args.py $0 "$@")
+ls -la .
 . utils/parse_options.sh
 
 if [ $# -ne 0 ]; then
