@@ -29,7 +29,7 @@ EOF
 
 out_filename=wav.scp
 cmd=utils/run.pl
-nj=30
+nj=8
 fs=none
 segments=
 
