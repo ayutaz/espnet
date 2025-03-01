@@ -25,20 +25,12 @@ fi
 . ./cmd.sh || exit 1;
 . ./db.sh || exit 1;
 
-if [ -z "${LJSPEECH}" ]; then
-   log "Fill the value of 'JSUT' of db.sh"
-   exit 1
-fi
-db_root=${LJSPEECH}
+db_root=downloads/moe-speech-plus/data
 
 train_set=tr_no_dev
 train_dev=dev
 eval_set=eval1
 
-if [ ${stage} -le -1 ] && [ ${stop_stage} -ge -1 ]; then
-    log "stage -1: Data Download"
-    local/data_download.sh "${db_root}"
-fi
 
 if [ ${stage} -le 0 ] && [ ${stop_stage} -ge 0 ]; then
     log "stage 0: Data Preparation"
