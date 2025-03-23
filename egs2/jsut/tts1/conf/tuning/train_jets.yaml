@@ -15,12 +15,12 @@ tts_conf:
     # generator related
     generator_type: jets_generator
     generator_params:
-        adim: 512                                    # attention dimension
-        aheads: 4                                    # number of attention heads
-        elayers: 6                                   # number of encoder layers
-        eunits: 2048                                 # number of encoder ff units
-        dlayers: 6                                   # number of decoder layers
-        dunits: 2048                                 # number of decoder ff units
+        adim: 256                                    # attention dimension
+        aheads: 2                                    # number of attention heads
+        elayers: 4                                   # number of encoder layers
+        eunits: 1024                                 # number of encoder ff units
+        dlayers: 4                                   # number of decoder layers
+        dunits: 1024                                 # number of decoder ff units
         positionwise_layer_type: conv1d              # type of position-wise layer
         positionwise_conv_kernel_size: 3             # kernel size of position wise conv layer
         duration_predictor_layers: 2                 # number of layers of duration predictor
