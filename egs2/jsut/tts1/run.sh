@@ -47,7 +47,8 @@ inference_config=conf/decode.yaml
 # 5. Phoneme + Prosody symbols - BEST for Japanese accent accuracy
 # (e.g. ^, k, #, o, _, k, o, [, N, n, i, ch, i, w, a, $)
 # This option includes pitch rise/fall markers, phrase boundaries, and pause information
-g2p=pyopenjtalk_prosody
+# Using pyopenjtalk-plus for improved accuracy
+g2p=pyopenjtalk_plus_prosody
 
 ./tts.sh \
     --lang jp \

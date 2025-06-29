@@ -27,14 +27,15 @@ test_sets="dev eval1"
 train_config=conf/tuning/train_jets.yaml
 inference_config=conf/decode.yaml
 
-# Use pyopenjtalk_prosody for maximum accent accuracy
+# Use pyopenjtalk_plus_prosody for maximum accent accuracy
 # This includes:
 # - Pitch rise/fall markers: [ ]
 # - Phrase boundaries: #
 # - Pause markers: _
 # - Utterance boundaries: ^ $
 # - Question markers: ?
-g2p=pyopenjtalk_prosody
+# - Improved handling with pyopenjtalk-plus
+g2p=pyopenjtalk_plus_prosody
 
 echo "Running JETS training with enhanced Japanese accent support"
 echo "G2P method: ${g2p}"
