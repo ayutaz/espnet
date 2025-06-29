@@ -12,7 +12,10 @@
       "Bash(source:*)",
       "Bash(/Users/inamotoyuuta/.local/bin/uv pip install pytest pyopenjtalk jaconv)",
       "Bash(python:*)",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "Bash(git push:*)",
+      "WebFetch(domain:github.com)",
+      "Bash(./test/test_ci_fix.sh:*)"
     ],
     "deny": []
   }

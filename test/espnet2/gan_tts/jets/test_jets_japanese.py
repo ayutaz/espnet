@@ -4,10 +4,26 @@
 """Test JETS Japanese TTS functionality."""
 
 import pytest
-import torch
 from typing import List
 
-from espnet2.text.phoneme_tokenizer import pyopenjtalk_g2p_prosody, pyopenjtalk_plus_g2p_prosody
+# Check if required modules are available
+try:
+    from espnet2.text.phoneme_tokenizer import pyopenjtalk_g2p_prosody, pyopenjtalk_plus_g2p_prosody
+    ESPNET_AVAILABLE = True
+except ImportError:
+    ESPNET_AVAILABLE = False
+
+try:
+    import pyopenjtalk
+    PYOPENJTALK_AVAILABLE = True
+except ImportError:
+    PYOPENJTALK_AVAILABLE = False
+
+# Skip all tests if dependencies are not available
+pytestmark = pytest.mark.skipif(
+    not ESPNET_AVAILABLE or not PYOPENJTALK_AVAILABLE,
+    reason="espnet2 or pyopenjtalk not available"
+)
 
 
 class TestJETSJapanese:
