@@ -5,6 +5,7 @@ set -e
 set -u
 set -o pipefail
 
+# JETS-specific configuration for Japanese TTS with maximum accent accuracy
 fs=24000
 n_fft=2048
 n_shift=300
@@ -22,32 +23,22 @@ train_set=tr_no_dev
 valid_set=dev
 test_sets="dev eval1"
 
-# Use JETS config for end-to-end TTS with better quality
+# JETS configuration files
 train_config=conf/tuning/train_jets.yaml
 inference_config=conf/decode.yaml
 
-# Input example: こ、こんにちは
-
-# 1. Phoneme + Pause
-# (e.g. k o pau k o N n i ch i w a)
-# g2p=pyopenjtalk
-
-# 2. Kana + Symbol
-# (e.g. コ 、 コ ン ニ チ ワ)
-# g2p=pyopenjtalk_kana
-
-# 3. Phoneme + Accent
-# (e.g. k 1 0 o 1 0 k 5 -4 o 5 -4 N 5 -3 n 5 -2 i 5 -2 ch 5 -1 i 5 -1 w 5 0 a 5 0)
-# g2p=pyopenjtalk_accent
-
-# 4. Phoneme + Accent + Pause
-# (e.g. k 1 0 o 1 0 pau k 5 -4 o 5 -4 N 5 -3 n 5 -2 i 5 -2 ch 5 -1 i 5 -1 w 5 0 a 5 0)
-# g2p=pyopenjtalk_accent_with_pause
-
-# 5. Phoneme + Prosody symbols - BEST for Japanese accent accuracy
-# (e.g. ^, k, #, o, _, k, o, [, N, n, i, ch, i, w, a, $)
-# This option includes pitch rise/fall markers, phrase boundaries, and pause information
+# Use pyopenjtalk_prosody for maximum accent accuracy
+# This includes:
+# - Pitch rise/fall markers: [ ]
+# - Phrase boundaries: #
+# - Pause markers: _
+# - Utterance boundaries: ^ $
+# - Question markers: ?
 g2p=pyopenjtalk_prosody
+
+echo "Running JETS training with enhanced Japanese accent support"
+echo "G2P method: ${g2p}"
+echo "This provides the most detailed prosodic information for natural Japanese TTS"
 
 ./tts.sh \
     --lang jp \
@@ -65,4 +56,9 @@ g2p=pyopenjtalk_prosody
     --valid_set "${valid_set}" \
     --test_sets "${test_sets}" \
     --srctexts "data/${train_set}/text" \
+    --tts_task gan_tts \
+    --use_feats_extract false \
+    --feats_extract null \
+    --train_args "--init_param " \
+    --g2p_train_text "data/${train_set}/text" \
     ${opts} "$@"
