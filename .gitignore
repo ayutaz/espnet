@@ -28,6 +28,9 @@ test_spm.model
 *.swp
 *.nfs*
 
+# Claude AI settings
+.claude/settings.local.json
+
 # recipe related
 egs*/*/*/data*
 egs*/*/*/db
