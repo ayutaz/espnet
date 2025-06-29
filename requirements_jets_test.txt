@@ -1,0 +1,11 @@
+# Requirements for JETS Japanese TTS testing
+torch>=1.13.0
+pytest>=6.0
+pytest-timeout>=2.0
+pytest-cov>=3.0
+pyopenjtalk>=0.3.0
+pyopenjtalk-plus>=0.3.3
+jaconv>=0.3
+numpy
+scipy
+pyyaml

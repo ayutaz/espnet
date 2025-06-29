@@ -23,6 +23,8 @@ g2p_choices = [
     "pyopenjtalk_accent",
     "pyopenjtalk_accent_with_pause",
     "pyopenjtalk_prosody",
+    "pyopenjtalk_plus",
+    "pyopenjtalk_plus_prosody",
     "pypinyin_g2p",
     "pypinyin_g2p_phone",
     "espeak_ng_arabic",
@@ -60,6 +62,112 @@ def pyopenjtalk_g2p(text) -> List[str]:
     return phones
 
 
+def pyopenjtalk_plus_g2p(text) -> List[str]:
+    """Use pyopenjtalk-plus for improved Japanese G2P."""
+    try:
+        import pyopenjtalk_plus as pyopenjtalk
+    except ImportError:
+        logging.warning("pyopenjtalk-plus not found, falling back to pyopenjtalk")
+        import pyopenjtalk
+
+    # phones is a str object separated by space
+    phones = pyopenjtalk.g2p(text, kana=False)
+    phones = phones.split(" ")
+    return phones
+
+
+def pyopenjtalk_plus_g2p_prosody(text: str, drop_unvoiced_vowels: bool = True) -> List[str]:
+    """Extract phoneme + prosody symbols using pyopenjtalk-plus.
+    
+    This function uses pyopenjtalk-plus for improved Japanese G2P with prosody.
+    Falls back to standard pyopenjtalk if pyopenjtalk-plus is not available.
+    
+    Args:
+        text (str): Input text.
+        drop_unvoiced_vowels (bool): whether to drop unvoiced vowels.
+        
+    Returns:
+        List[str]: List of phoneme + prosody symbols.
+    """
+    try:
+        import pyopenjtalk_plus as pyopenjtalk
+    except ImportError:
+        logging.warning("pyopenjtalk-plus not found, falling back to pyopenjtalk")
+        import pyopenjtalk
+    
+    labels = pyopenjtalk.run_frontend(text)[1]
+    N = len(labels)
+
+    phones = []
+    for n in range(N):
+        lab_curr = labels[n]
+
+        # current phoneme
+        p3 = re.search(r"\-(.*?)\+", lab_curr).group(1)
+
+        # deal unvoiced vowels as normal vowels
+        if drop_unvoiced_vowels and p3 in "AEIOU":
+            p3 = p3.lower()
+
+        # deal with sil at the beginning and the end of text
+        if p3 == "sil":
+            assert n == 0 or n == N - 1
+            if n == 0:
+                phones.append("^")
+            elif n == N - 1:
+                # check question form or not
+                e3 = _numeric_feature_by_regex(r"!(\d+)_", lab_curr)
+                if e3 == 0:
+                    phones.append("$")
+                elif e3 == 1:
+                    phones.append("?")
+            continue
+        elif p3 == "pau":
+            phones.append("_")
+            continue
+        else:
+            phones.append(p3)
+
+        # accent type and position info (forward or backward)
+        a1 = _numeric_feature_by_regex(r"/A:([0-9\-]+)\+", lab_curr)
+        a2 = _numeric_feature_by_regex(r"\+(\d+)\+", lab_curr)
+        a3 = _numeric_feature_by_regex(r"\+(\d+)/", lab_curr)
+
+        # number of mora in accent phrase
+        f1 = _numeric_feature_by_regex(r"/F:(\d+)_", lab_curr)
+
+        a2_next = _numeric_feature_by_regex(r"\+(\d+)\+", labels[n + 1])
+        # accent phrase border
+        if a3 == 1 and a2_next == 1 and p3 in "aeiouAEIOUNcl":
+            phones.append("#")
+        # pitch falling
+        elif a1 == 0 and a2_next == a2 + 1 and a2 != f1:
+            phones.append("]")
+        # pitch rising
+        elif a2 == 1 and a2_next == 2:
+            phones.append("[")
+
+    return phones
+
+
+
+
+def pyopenjtalk_plus_g2p(text) -> List[str]:
+    """Use pyopenjtalk-plus for improved Japanese G2P."""
+    try:
+        import pyopenjtalk_plus as pyopenjtalk
+    except ImportError:
+        logging.warning("pyopenjtalk-plus not found, falling back to pyopenjtalk")
+        import pyopenjtalk
+
+    # phones is a str object separated by space
+    phones = pyopenjtalk.g2p(text, kana=False)
+    phones = phones.split(" ")
+    return phones
+
+
+
+
 def pyopenjtalk_g2p_accent(text) -> List[str]:
     import pyopenjtalk
     import re
@@ -70,6 +178,8 @@ def pyopenjtalk_g2p_accent(text) -> List[str]:
         if len(p) == 1:
             phones += [p[0][0], p[0][2], p[0][1]]
     return phones
+
+
 
 
 def pyopenjtalk_g2p_accent_with_pause(text) -> List[str]:
@@ -85,6 +195,8 @@ def pyopenjtalk_g2p_accent_with_pause(text) -> List[str]:
         if len(p) == 1:
             phones += [p[0][0], p[0][2], p[0][1]]
     return phones
+
+
 
 
 def pyopenjtalk_g2p_kana(text) -> List[str]:
@@ -173,6 +285,8 @@ def pyopenjtalk_g2p_prosody(text: str, drop_unvoiced_vowels: bool = True) -> Lis
     return phones
 
 
+
+
 def _numeric_feature_by_regex(regex, s):
     match = re.search(regex, s)
     if match is None:
@@ -186,6 +300,8 @@ def pypinyin_g2p(text) -> List[str]:
 
     phones = [phone[0] for phone in pinyin(text, style=Style.TONE3)]
     return phones
+
+
 
 
 def pypinyin_g2p_phone(text) -> List[str]:
@@ -211,6 +327,8 @@ def pypinyin_g2p_phone(text) -> List[str]:
     return phones
 
 
+
+
 class G2p_en:
     """On behalf of g2p_en.G2p.
 
@@ -233,6 +351,8 @@ class G2p_en:
             # remove space which represents word serapater
             phones = list(filter(lambda s: s != " ", phones))
         return phones
+
+
 
 
 class G2pk:
@@ -271,6 +391,8 @@ class G2pk:
             # remove space which represents word serapater
             phones = list(filter(lambda s: s != " ", phones))
         return phones
+
+
 
 
 class Jaso:
@@ -387,6 +509,10 @@ class PhonemeTokenizer(AbsTokenizer):
             self.g2p = pyopenjtalk_g2p_accent_with_pause
         elif g2p_type == "pyopenjtalk_prosody":
             self.g2p = pyopenjtalk_g2p_prosody
+        elif g2p_type == "pyopenjtalk_plus":
+            self.g2p = pyopenjtalk_plus_g2p
+        elif g2p_type == "pyopenjtalk_plus_prosody":
+            self.g2p = pyopenjtalk_plus_g2p_prosody
         elif g2p_type == "pypinyin_g2p":
             self.g2p = pypinyin_g2p
         elif g2p_type == "pypinyin_g2p_phone":
