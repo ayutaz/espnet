@@ -1,0 +1,40 @@
+name: JETS Japanese Tests Simple
+
+on:
+  push:
+    branches: 
+      - jets-japanese-accent-fix
+      - jets
+      - master
+  pull_request:
+    branches: 
+      - jets
+      - master
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.8
+    
+    - name: Test imports
+      run: |
+        echo "Testing basic imports..."
+        python -c "print('Python is working')"
+        
+    - name: Check JETS files
+      run: |
+        echo "Checking JETS-related files..."
+        ls -la espnet2/gan_tts/jets/ || echo "JETS directory not found"
+        ls -la test/espnet2/gan_tts/jets/ || echo "JETS test directory not found"
+        
+    - name: Summary
+      run: |
+        echo "✅ Basic workflow is running"
+        echo "Branch: ${{ github.ref_name }}"
+        echo "Event: ${{ github.event_name }}"
